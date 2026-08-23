@@ -1,0 +1,66 @@
+﻿[
+  {
+    "attack_id": "ATK-001",
+    "name": "Synthetic Identity Abuse",
+    "category": "synthetic_identity",
+    "payment_rail": "Card",
+    "description": "Synthetic identities used in simulated payment activity.",
+    "signals": ["identity_inconsistency", "unusual_history", "velocity"]
+  },
+  {
+    "attack_id": "ATK-002",
+    "name": "UPI Social Engineering",
+    "category": "social_engineering",
+    "payment_rail": "UPI",
+    "description": "Simulated social-engineering-driven payment attempts.",
+    "signals": ["new_device", "velocity", "behavior_change"]
+  },
+  {
+    "attack_id": "ATK-003",
+    "name": "Account Takeover",
+    "category": "account_takeover",
+    "payment_rail": "Card",
+    "description": "Simulated compromised-account transaction behavior.",
+    "signals": ["device_change", "location_change", "velocity"]
+  },
+  {
+    "attack_id": "ATK-004",
+    "name": "IMPS Velocity Abuse",
+    "category": "payment_rail_abuse",
+    "payment_rail": "IMPS",
+    "description": "Rapid synthetic transaction bursts on an instant-payment rail.",
+    "signals": ["high_velocity", "amount_pattern", "recipient_change"]
+  },
+  {
+    "attack_id": "ATK-005",
+    "name": "Fraud Ring Activity",
+    "category": "fraud_rings",
+    "payment_rail": "Multi-rail",
+    "description": "Synthetic coordinated activity across linked accounts and merchants.",
+    "signals": ["shared_device", "shared_recipient", "graph_density"]
+  },
+  {
+    "attack_id": "ATK-006",
+    "name": "Adversarial Transaction Perturbation",
+    "category": "transaction_manipulation",
+    "payment_rail": "Card",
+    "description": "Synthetic feature changes designed to test detector robustness.",
+    "signals": ["feature_shift", "boundary_proximity", "behavior_change"]
+  },
+  {
+    "attack_id": "ATK-007",
+    "name": "GenAI-Assisted Phishing",
+    "category": "genai_enabled",
+    "payment_rail": "Multi-rail",
+    "description": "Synthetic AI-generated social-engineering content associated with simulated transactions.",
+    "signals": ["new_device", "behavior_change", "transaction_anomaly"]
+  },
+  {
+    "attack_id": "ATK-008",
+    "name": "Multi-Modal Fraud Scenario",
+    "category": "genai_enabled",
+    "payment_rail": "Multi-rail",
+    "description": "Synthetic fraud cases combining transaction, device, and communication signals.",
+    "signals": ["device_change", "behavior_change", "velocity", "transaction_anomaly"]
+  }
+]
