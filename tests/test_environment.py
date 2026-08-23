@@ -1,0 +1,10 @@
+﻿def test_environment():
+    import numpy
+    import pandas
+    import sklearn
+    import xgboost
+    import torch
+    import torch_geometric
+    import sdv
+    import shap
+    assert True
