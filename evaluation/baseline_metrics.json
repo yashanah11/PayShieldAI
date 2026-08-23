@@ -1,0 +1,11 @@
+{
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "roc_auc": 1.0,
+  "false_positive_rate": 0.0,
+  "true_negatives": 9500,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "true_positives": 500
+}
