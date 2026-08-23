@@ -1,0 +1,13 @@
+﻿.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+.vscode/
+.ipynb_checkpoints/
+data/raw/
+data/private/
+models/*.pt
+models/*.pth
+models/*.bin
+*.log
