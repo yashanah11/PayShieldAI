@@ -9,3 +9,5 @@ evaluation/*.json
 evaluation/*.json
 evaluation/*.json
 models/*.joblib
+evaluation/*.json
+models/*.joblib
