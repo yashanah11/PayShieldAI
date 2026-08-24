@@ -1,5 +1,6 @@
 ﻿data/
 models/
+explainability/*.json
 __pycache__/
 .pytest_cache/
 *.pyc
