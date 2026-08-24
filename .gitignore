@@ -7,3 +7,5 @@ __pycache__/
 evaluation/*.json
 evaluation/*.json
 evaluation/*.json
+evaluation/*.json
+models/*.joblib
