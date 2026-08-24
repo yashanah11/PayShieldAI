@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 evaluation/*.json
 evaluation/*.json
+evaluation/*.json
