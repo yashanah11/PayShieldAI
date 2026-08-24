@@ -4,3 +4,4 @@ explainability/*.json
 __pycache__/
 .pytest_cache/
 *.pyc
+evaluation/*.json
