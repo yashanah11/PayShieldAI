@@ -31,24 +31,21 @@ def train_candidate(seed=42):
         random_state=seed,
     )
 
-    model.fit(
-        df[FEATURES],
-        df["is_fraud"],
-    )
-
+    model.fit(df[FEATURES], df["is_fraud"])
     return model
 
 
 def evaluate(model, seed=10042):
+    if not hasattr(model, "predict_proba"):
+        raise TypeError("Candidate model must provide predict_proba()")
+
     df = generate_fraud_dataset(
         5000,
         fraud_rate=0.05,
         seed=seed,
     )
 
-    probabilities = model.predict_proba(
-        df[FEATURES]
-    )[:, 1]
+    probabilities = model.predict_proba(df[FEATURES])[:, 1]
 
     return roc_auc_score(
         df["is_fraud"],
@@ -57,20 +54,26 @@ def evaluate(model, seed=10042):
 
 
 def promote_if_better(candidate, old_auc, candidate_auc):
-    if candidate_auc >= old_auc:
-        shutil.copy2(
-            MODEL_PATH,
-            BACKUP_PATH,
-        )
+    if not hasattr(candidate, "predict_proba"):
+        return False
 
-        joblib.dump(
-            candidate,
-            MODEL_PATH,
-        )
+    if candidate_auc < old_auc:
+        return False
 
-        return True
+    if not MODEL_PATH.exists():
+        return False
 
-    return False
+    shutil.copy2(
+        MODEL_PATH,
+        BACKUP_PATH,
+    )
+
+    joblib.dump(
+        candidate,
+        MODEL_PATH,
+    )
+
+    return True
 
 
 def run_model_promotion(seed=42):
