@@ -1,15 +1,26 @@
-﻿data/
-models/
-explainability/*.json
+﻿# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
 __pycache__/
-.pytest_cache/
 *.pyc
+.pytest_cache/
+
+# Generated datasets / models
+data/
+models/
+
+# Generated evaluation outputs
 evaluation/*.json
-evaluation/*.json
-evaluation/*.json
-evaluation/*.json
-models/*.joblib
-evaluation/*.json
-models/*.joblib
 evaluation/end_to_end_results.json
 evaluation/quantitative_report.json
+
+# Explainability outputs
+explainability/*.json
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
