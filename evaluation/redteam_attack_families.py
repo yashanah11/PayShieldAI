@@ -1,158 +1,75 @@
-﻿import joblib
+﻿"""
+Red-Team Attack Families for PayShieldAI
+Defines the 8 locked adversarial attack patterns using ONLY the canonical 7-feature schema.
+"""
+
 import numpy as np
+import pandas as pd
 
-from sklearn.metrics import roc_auc_score, recall_score
-from sklearn.model_selection import train_test_split
-from xgboost import XGBClassifier
+def attack_velocity_spike(X_base, y_base):
+    """Simulates rapid successive transactions by inflating velocity metrics."""
+    X_adv = X_base.copy()
+    X_adv['velocity_1h'] = X_adv['velocity_1h'] * 5
+    X_adv['velocity_24h'] = X_adv['velocity_24h'] * 3
+    return X_adv, y_base
 
-from generation.generator import FEATURES
-from evaluation.hard_benchmark import generate_hard_benchmark
+def attack_geographic_spoof(X_base, y_base):
+    """Simulates location spoofing or stolen cards used in distant locations."""
+    X_adv = X_base.copy()
+    X_adv['distance_km'] = X_adv['distance_km'].apply(lambda x: max(x, 5000.0))
+    return X_adv, y_base
 
+def attack_coordinated_swarm(X_base, y_base):
+    """Slightly elevates multiple risk indicators to stay under individual threshold radars."""
+    X_adv = X_base.copy()
+    X_adv['velocity_1h'] = X_adv['velocity_1h'] * 1.5
+    X_adv['distance_km'] = X_adv['distance_km'] * 1.5
+    X_adv['merchant_risk'] = X_adv['merchant_risk'] * 1.2
+    return X_adv, y_base
 
-def train_candidate(seed=42):
-    df = generate_hard_benchmark(
-        n=10000,
-        fraud_rate=0.05,
-        seed=seed,
-    )
+def attack_high_value_cashing(X_base, y_base):
+    """Fraudsters attempting to cash out max value in a single hit while keeping velocity zero."""
+    X_adv = X_base.copy()
+    X_adv['amount'] = X_adv['amount'] * 10
+    X_adv['velocity_1h'] = 0.0 
+    return X_adv, y_base
 
-    X_train, _, y_train, _ = train_test_split(
-        df[FEATURES],
-        df["is_fraud"],
-        test_size=0.30,
-        random_state=seed,
-        stratify=df["is_fraud"],
-    )
+def attack_off_hour_strike(X_base, y_base):
+    """Exploiting time-based models by forcing transactions into typical sleep hours."""
+    X_adv = X_base.copy()
+    X_adv['hour'] = 3.0  # 3 AM
+    return X_adv, y_base
 
-    model = XGBClassifier(
-        n_estimators=200,
-        max_depth=5,
-        learning_rate=0.08,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        eval_metric="logloss",
-        random_state=seed,
-    )
+def attack_new_device_fraud(X_base, y_base):
+    """Simulates account takeovers using completely new/unrecognized hardware."""
+    X_adv = X_base.copy()
+    X_adv['device_age_days'] = 0.0
+    return X_adv, y_base
 
-    model.fit(X_train, y_train)
+def attack_merchant_compromise(X_base, y_base):
+    """Funneling transactions through highly risky or newly set up fraud merchant accounts."""
+    X_adv = X_base.copy()
+    X_adv['merchant_risk'] = 0.99 
+    return X_adv, y_base
 
-    return model
+def attack_micro_structuring(X_base, y_base):
+    """Testing minimum-amount evasion (card testing) with high frequency."""
+    X_adv = X_base.copy()
+    X_adv['amount'] = 1.05  # Micro-transaction
+    X_adv['velocity_1h'] = X_adv['velocity_1h'] * 10
+    return X_adv, y_base
 
-
-def make_attack_family(base, family, seed=12345):
-    rng = np.random.default_rng(seed)
-
-    df = base.copy()
-
-    fraud_indices = rng.choice(
-        df.index,
-        size=max(1, int(len(df) * 0.05)),
-        replace=False,
-    )
-
-    df["is_fraud"] = 0
-    df.loc[fraud_indices, "is_fraud"] = 1
-
-    if family == "velocity":
-        idx = fraud_indices
-
-        df.loc[idx, "velocity_1h"] += rng.integers(
-            2, 5, len(idx)
-        )
-        df.loc[idx, "velocity_24h"] += rng.integers(
-            3, 10, len(idx)
-        )
-
-    elif family == "geographic":
-        idx = fraud_indices
-
-        df.loc[idx, "distance_km"] += rng.uniform(
-            30, 120, len(idx)
-        )
-
-    elif family == "coordinated":
-        idx = fraud_indices
-
-        df.loc[idx, "amount"] *= rng.uniform(
-            1.5, 3.0, len(idx)
-        )
-
-        df.loc[idx, "velocity_24h"] += rng.integers(
-            2, 8, len(idx)
-        )
-
-        df.loc[idx, "distance_km"] += rng.uniform(
-            20, 100, len(idx)
-        )
-
-    return df
-
-
-def evaluate(model, df):
-    X = df[FEATURES]
-    y = df["is_fraud"]
-
-    probabilities = model.predict_proba(X)[:, 1]
-    predictions = (probabilities >= 0.5).astype(int)
-
+def get_redteam_attacks():
+    """
+    Returns the exact 8 locked attack families required for Stage 9 validation.
+    """
     return {
-        "auc": roc_auc_score(y, probabilities),
-        "recall": recall_score(
-            y,
-            predictions,
-            zero_division=0,
-        ),
+        "Velocity Spike": attack_velocity_spike,
+        "Geographic Spoof": attack_geographic_spoof,
+        "Coordinated Swarm": attack_coordinated_swarm,
+        "High-Value Cashing": attack_high_value_cashing,
+        "Off-Hour Strike": attack_off_hour_strike,
+        "New Device Fraud": attack_new_device_fraud,
+        "Merchant Compromise": attack_merchant_compromise,
+        "Micro-Structuring": attack_micro_structuring
     }
-
-
-if __name__ == "__main__":
-    print("=== RED-TEAM STAGE 3: ATTACK FAMILY DIAGNOSIS ===")
-
-    model = train_candidate()
-
-    base = generate_hard_benchmark(
-        n=5000,
-        fraud_rate=0.05,
-        seed=999,
-    )
-
-    families = [
-        "velocity",
-        "geographic",
-        "coordinated",
-    ]
-
-    results = {}
-
-    for family in families:
-        df = make_attack_family(
-            base,
-            family,
-        )
-
-        metrics = evaluate(
-            model,
-            df,
-        )
-
-        results[family] = metrics
-
-        print()
-        print(f"ATTACK FAMILY: {family.upper()}")
-        print(f"ROC-AUC : {metrics['auc']:.4f}")
-        print(f"Recall  : {metrics['recall']:.4f}")
-
-    print()
-    print("=== DIAGNOSIS ===")
-
-    weakest = min(
-        results,
-        key=lambda x: results[x]["auc"],
-    )
-
-    print(f"Weakest family: {weakest}")
-
-    if results[weakest]["auc"] < 0.80:
-        print("STATUS: WEAKNESS CONFIRMED")
-    else:
-        print("STATUS: ALL FAMILIES PASS")
