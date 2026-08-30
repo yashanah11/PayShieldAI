@@ -12,6 +12,10 @@ __pycache__/
 data/
 models/
 
+# Keep production v6 model for deployment
+!models/
+!models/xgboost_detector_v6_robust.joblib
+
 # Generated evaluation outputs
 evaluation/*.json
 evaluation/end_to_end_results.json
