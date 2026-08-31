@@ -12,7 +12,10 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from evaluation.redteam_attack_families import get_redteam_attacks
+try:
+    from evaluation.redteam_attack_families import get_redteam_attacks
+except ImportError:
+    from backend.evaluation.redteam_attack_families import get_redteam_attacks
 
 app = FastAPI(
     title="PayShieldAI Backend API",

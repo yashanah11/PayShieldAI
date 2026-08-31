@@ -13,8 +13,9 @@ import type {
   DemoResponse,
 } from "@/types/api";
 
-const BASE_URL =
+const rawBaseUrl =
   import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const BASE_URL = rawBaseUrl.replace(/\/+$/, "");
 
 class ApiError extends Error {
   status: number;

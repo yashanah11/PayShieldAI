@@ -3,25 +3,28 @@ import joblib
 import pandas as pd
 import numpy as np
 
-from evaluation.redteam_attack_families import get_redteam_attacks
+try:
+    from evaluation.redteam_attack_families import get_redteam_attacks
+except ImportError:
+    from backend.evaluation.redteam_attack_families import get_redteam_attacks
 
 
 # ============================================================
-# Backend root
+# Backend root & Model path
 # ============================================================
-# Since the Vercel Root Directory is "backend",
-# all production dependencies are resolved relative to this folder.
 BACKEND_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-
-# ============================================================
-# Production Model
-# ============================================================
 V6_MODEL_PATH = os.path.join(
     BACKEND_ROOT,
     "models",
     "xgboost_detector_v6_robust.joblib"
 )
+
+if not os.path.exists(V6_MODEL_PATH):
+    # Try root models directory if running from repo root
+    _root_model = os.path.abspath(os.path.join(BACKEND_ROOT, "..", "models", "xgboost_detector_v6_robust.joblib"))
+    if os.path.exists(_root_model):
+        V6_MODEL_PATH = _root_model
 
 
 # ============================================================
