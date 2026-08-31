@@ -1,16 +1,28 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from backend.schemas import (
-    TransactionInput, PredictionResponse, BatchPredictionRequest, 
-    AttackSimulationRequest, AttackSimulationResponse
-)
-from backend.ml_service import ml_service, LOCKED_FEATURES
 import sys
 import os
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+BACKEND_DIR = os.path.abspath(os.path.dirname(__file__))
+
+for p in [PROJECT_ROOT, BACKEND_DIR]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+try:
+    from backend.schemas import (
+        TransactionInput, PredictionResponse, BatchPredictionRequest, 
+        AttackSimulationRequest, AttackSimulationResponse
+    )
+    from backend.ml_service import ml_service, LOCKED_FEATURES
+except ImportError:
+    from schemas import (
+        TransactionInput, PredictionResponse, BatchPredictionRequest, 
+        AttackSimulationRequest, AttackSimulationResponse
+    )
+    from ml_service import ml_service, LOCKED_FEATURES
 
 try:
     from evaluation.redteam_attack_families import get_redteam_attacks
